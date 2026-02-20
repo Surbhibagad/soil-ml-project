@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+venv/
+.vscode/
+.m2/
+.gradle/
+node_modules/
+AppData/
+Downloads/
+Documents/
+Desktop/
+*.log
