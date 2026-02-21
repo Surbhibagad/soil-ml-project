@@ -1,34 +1,28 @@
 import joblib
 import pandas as pd
 import sys
-import os
 
 # Load trained model
-MODEL_PATH = "model.pkl"
+model = joblib.load("model/model.pkl")
 
-if not os.path.exists(MODEL_PATH):
-    raise FileNotFoundError(f"Model file not found: {MODEL_PATH}")
-
-model = joblib.load(MODEL_PATH)
-
-# Example:
-# docker run soil-ml 25 60 1013
-
+# Check input arguments
+# Usage: docker run image temp humidity pressure
 if len(sys.argv) != 4:
-    print("Usage: python src/predict.py <temp> <humidity> <pressure>")
+    print("Usage: python predict.py <Temperature> <AirHumidity> <Pressure>")
     sys.exit(1)
 
-temp = float(sys.argv[1])
+# Read inputs
+temperature = float(sys.argv[1])
 humidity = float(sys.argv[2])
 pressure = float(sys.argv[3])
 
-# Create DataFrame
+# Create input DataFrame (same format as training)
 input_data = pd.DataFrame(
-    [[temp, humidity, pressure]],
-    columns=["temperature", "humidity", "pressure"]
+    [[temperature, humidity, pressure]],
+    columns=["Temperature", "Air Humidity", "Pressure"]
 )
 
 # Predict
 prediction = model.predict(input_data)
 
-print("Predicted Soil Moisture:", float(prediction[0]))
+print("🌱 Predicted Soil Moisture:", prediction[0])

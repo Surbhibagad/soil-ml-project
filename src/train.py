@@ -4,12 +4,15 @@ from sklearn.linear_model import LinearRegression
 import joblib
 import os
 
-# Load data
+# Load dataset
 data = pd.read_excel("data/Soil Moisture.xlsx")
 
-# Features & target
-X = data.iloc[:, :-1]
-y = data.iloc[:, -1]
+# Define features and target (MUST match everywhere)
+FEATURES = ["Temperature", "Air Humidity", "Pressure"]
+TARGET = "Soil Moisture"
+
+X = data[FEATURES]
+y = data[TARGET]
 
 # Train-test split
 X_train, X_test, y_train, y_test = train_test_split(
@@ -20,8 +23,10 @@ X_train, X_test, y_train, y_test = train_test_split(
 model = LinearRegression()
 model.fit(X_train, y_train)
 
-# Save model in project root
-MODEL_PATH = "model.pkl"
-joblib.dump(model, MODEL_PATH)
+# Ensure model directory exists
+os.makedirs("model", exist_ok=True)
 
-print(f"Training completed. Model saved at {MODEL_PATH}")
+# Save model
+joblib.dump(model, "model/model.pkl")
+
+print("✅ Training completed. Model saved to model/model.pkl")
