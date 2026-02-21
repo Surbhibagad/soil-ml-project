@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 import joblib
+import os
 
 # Load data
 data = pd.read_excel("data/Soil Moisture.xlsx")
@@ -19,7 +20,8 @@ X_train, X_test, y_train, y_test = train_test_split(
 model = LinearRegression()
 model.fit(X_train, y_train)
 
-# Save model
-joblib.dump(model, "model.pkl")
+# Save model in project root
+MODEL_PATH = "model.pkl"
+joblib.dump(model, MODEL_PATH)
 
-print("Training completed successfully")
+print(f"Training completed. Model saved at {MODEL_PATH}")
