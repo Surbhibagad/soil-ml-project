@@ -19,8 +19,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src/ ./src
 COPY data/ ./data
 COPY model/ ./model
-# Copy trained model
-COPY model.pkl ./model.pkl
 
 # Default command (prediction)
 ENTRYPOINT ["python", "src/predict.py"]
