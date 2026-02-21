@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project files
 COPY src/ ./src
 COPY data/ ./data
-
+COPY model/ ./model
 # Copy trained model
 COPY model.pkl ./model.pkl
 

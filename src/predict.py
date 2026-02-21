@@ -2,24 +2,26 @@ import joblib
 import pandas as pd
 import sys
 
-# Load trained model
+# Load model
 model = joblib.load("model/model.pkl")
 
-# Check input arguments
-# Usage: docker run image temp humidity pressure
+# Check input
+# Example:
+# docker run image 30 60 1
+# (Temperature Humidity pump_data)
+
 if len(sys.argv) != 4:
-    print("Usage: python predict.py <Temperature> <AirHumidity> <Pressure>")
+    print("Usage: python predict.py <Temperature> <Humidity> <pump_data>")
     sys.exit(1)
 
-# Read inputs
-temperature = float(sys.argv[1])
+temp = float(sys.argv[1])
 humidity = float(sys.argv[2])
-pressure = float(sys.argv[3])
+pump = float(sys.argv[3])
 
-# Create input DataFrame (same format as training)
+# Create input dataframe
 input_data = pd.DataFrame(
-    [[temperature, humidity, pressure]],
-    columns=["Temperature", "Air Humidity", "Pressure"]
+    [[temp, humidity, pump]],
+    columns=["Temperature", "Humidity", "pump data"]
 )
 
 # Predict

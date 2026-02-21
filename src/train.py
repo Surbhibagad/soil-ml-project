@@ -1,14 +1,16 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
 import joblib
 import os
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
 
 # Load dataset
 data = pd.read_excel("data/Soil Moisture.xlsx")
 
-# Define features and target (MUST match everywhere)
-FEATURES = ["Temperature", "Air Humidity", "Pressure"]
+print("Columns:", data.columns.tolist())
+
+# Features and Target
+FEATURES = ["Temperature", "Humidity", "pump data"]
 TARGET = "Soil Moisture"
 
 X = data[FEATURES]
@@ -23,10 +25,10 @@ X_train, X_test, y_train, y_test = train_test_split(
 model = LinearRegression()
 model.fit(X_train, y_train)
 
-# Ensure model directory exists
+# Create model folder
 os.makedirs("model", exist_ok=True)
 
 # Save model
 joblib.dump(model, "model/model.pkl")
 
-print("✅ Training completed. Model saved to model/model.pkl")
+print("✅ Training completed. Model saved.")
