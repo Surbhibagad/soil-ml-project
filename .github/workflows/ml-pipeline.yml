@@ -2,7 +2,7 @@ name: ML CI/CD Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
 
 jobs:
@@ -11,32 +11,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.10"
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
 
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
 
-    - name: Train model
-      run: |
-        python src/train.py
+      - name: Train model
+        run: |
+          python src/train.py
 
-    - name: Evaluate model
-      run: |
-        python src/evaluate.py
+      - name: Evaluate model
+        run: |
+          python src/evaluate.py
 
-    # ✅ Upload trained model
-    - name: Upload model artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: trained-model
-        path: model.pkl
+      # Debug step to verify model file exists
+      - name: Check generated files
+        run: |
+          echo "Listing files:"
+          ls -R
+
+      # Upload trained model
+      - name: Upload model artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: trained-model
+          path: model.pkl
 
 
   docker-build:
@@ -44,23 +50,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # ✅ Download trained model
-    - name: Download model artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: trained-model
+      # Download trained model
+      - name: Download model artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: trained-model
+          path: .
 
-    - name: Login to DockerHub
-      run: |
-        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - name: Verify downloaded artifact
+        run: |
+          echo "Downloaded files:"
+          ls -R
 
-    - name: Build Docker Image
-      run: |
-        docker build -t surbhibagad/soil-ml:latest .
+      - name: Login to DockerHub
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-    - name: Push Image
-      run: |
-        docker push surbhibagad/soil-ml:latest
+      - name: Build Docker Image
+        run: |
+          docker build -t surbhibagad/soil-ml:latest .
+
+      - name: Push Docker Image
+        run: |
+          docker push surbhibagad/soil-ml:latest
