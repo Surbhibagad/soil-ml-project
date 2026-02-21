@@ -6,7 +6,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 data = pd.read_excel("data/Soil Moisture.xlsx")
 
 # Features and Target
-FEATURES = ["Temperature", "Humidity", "pump data"]
+FEATURES = ["Temperature", "Air Humidity", "Pump Data"]
 TARGET = "Soil Moisture"
 
 X = data[FEATURES]

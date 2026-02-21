@@ -10,7 +10,7 @@ data = pd.read_excel("data/Soil Moisture.xlsx")
 print("Columns:", data.columns.tolist())
 
 # Features and Target
-FEATURES = ["Temperature", "Humidity", "pump data"]
+FEATURES = ["Temperature", "Air Humidity", "Pump Data"]
 TARGET = "Soil Moisture"
 
 X = data[FEATURES]

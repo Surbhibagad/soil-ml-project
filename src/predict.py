@@ -11,7 +11,7 @@ model = joblib.load("model/model.pkl")
 # (Temperature Humidity pump_data)
 
 if len(sys.argv) != 4:
-    print("Usage: python predict.py <Temperature> <Humidity> <pump_data>")
+    print("Usage: python predict.py <Temperature> <Air Humidity> <Pump_Data>")
     sys.exit(1)
 
 temp = float(sys.argv[1])
@@ -21,7 +21,7 @@ pump = float(sys.argv[3])
 # Create input dataframe
 input_data = pd.DataFrame(
     [[temp, humidity, pump]],
-    columns=["Temperature", "Humidity", "pump data"]
+    columns=["Temperature", "Air Humidity", "Pump Data"]
 )
 
 # Predict
