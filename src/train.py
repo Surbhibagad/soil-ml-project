@@ -25,11 +25,17 @@ X_train, X_test, y_train, y_test = train_test_split(
 model = LinearRegression()
 model.fit(X_train, y_train)
 
-# Create model folder if it does not exist
+# Create folders
 os.makedirs("model", exist_ok=True)
+os.makedirs("data/split", exist_ok=True)
 
 # Save trained model
 joblib.dump(model, "model/model.pkl")
 
-print("✅ Training completed.")
-print("✅ Model saved at model/model.pkl")
+# Save test data
+X_test.to_csv("data/split/X_test.csv", index=False)
+y_test.to_csv("data/split/y_test.csv", index=False)
+
+print("✅ Training completed")
+print("✅ Model saved: model/model.pkl")
+print("✅ Test data saved: data/split/")

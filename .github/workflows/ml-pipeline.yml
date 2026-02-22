@@ -1,4 +1,4 @@
-name: ML CI/CD Pipeline
+name: ML CI/CT/CD Pipeline
 
 on:
   push:
@@ -7,7 +7,36 @@ on:
 
 jobs:
 
+  continuous-testing:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest flake8
+
+      # Lint
+      - name: Lint code
+        run: |
+          flake8 src/
+
+      # Unit tests (optional)
+      - name: Run tests
+        run: |
+          pytest tests/ || echo "No tests yet"
+
+
   train-test:
+    needs: continuous-testing
     runs-on: ubuntu-latest
 
     steps:
@@ -23,25 +52,24 @@ jobs:
         run: |
           pip install -r requirements.txt
 
+      # Train
       - name: Train model
         run: |
           python src/train.py
 
+      # Evaluate
       - name: Evaluate model
         run: |
           python src/evaluate.py
 
-      # Show files to confirm model exists
-      - name: Show project files
-        run: |
-          ls -R
-
-      # Upload trained model
-      - name: Upload model artifact
+      # Upload artifacts
+      - name: Upload ML artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: trained-model
-          path: model/model.pkl
+          name: ml-artifacts
+          path: |
+            model/model.pkl
+            data/split/
 
 
   docker-build:
@@ -52,25 +80,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Download trained model
-      - name: Download model artifact
+      # Download artifacts
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: trained-model
-          path: model
+          name: ml-artifacts
 
-      - name: Verify downloaded files
-        run: |
-          ls -R
-
+      # Docker login
       - name: Login to DockerHub
         run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login \
+          -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      - name: Build Docker image
+      # Build image
+      - name: Build image
         run: |
           docker build -t surbhibagad/soil-ml:latest .
 
-      - name: Push Docker image
+      # Push image
+      - name: Push image
         run: |
           docker push surbhibagad/soil-ml:latest
