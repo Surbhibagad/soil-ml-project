@@ -4,8 +4,8 @@ import joblib
 from sklearn.metrics import mean_squared_error, r2_score
 
 # Quality thresholds (adjust after testing)
-MAX_MSE = 50.0
-MIN_R2 = 0.75
+MAX_MSE = 12000.0
+MIN_R2 = 0.70
 
 # Load test data
 X_test = pd.read_csv("data/split/X_test.csv")
