@@ -39,4 +39,3 @@ y_test.to_csv("data/split/y_test.csv", index=False)
 print("✅ Training completed")
 print("✅ Model saved: model/model.pkl")
 print("✅ Test data saved: data/split/")
-  
