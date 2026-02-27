@@ -7,7 +7,7 @@ import sys
 try:
     model = joblib.load("model/model.pkl")
 except Exception as e:
-    print("❌ Cannot load model:", e)
+    print(" Cannot load model:", e)
     sys.exit(1)
 
 
@@ -22,21 +22,21 @@ try:
     humidity = float(sys.argv[2])
     pump = float(sys.argv[3])
 except ValueError:
-    print("❌ Inputs must be numeric")
+    print(" Inputs must be numeric")
     sys.exit(1)
 
 
 # Range validation (optional)
 if not (-20 <= temp <= 60):
-    print("❌ Temperature out of range")
+    print(" Temperature out of range")
     sys.exit(1)
 
 if not (0 <= humidity <= 100):
-    print("❌ Humidity must be 0-100")
+    print(" Humidity must be 0-100")
     sys.exit(1)
 
 if pump < 0:
-    print("❌ Pump must be positive")
+    print(" Pump must be positive")
     sys.exit(1)
 
 
@@ -50,4 +50,4 @@ input_data = pd.DataFrame(
 # Predict
 prediction = model.predict(input_data)
 
-print(f"🌱 Predicted Soil Moisture: {prediction[0]:.2f}")
+print(f" Predicted Soil Moisture: {prediction[0]:.2f}")
