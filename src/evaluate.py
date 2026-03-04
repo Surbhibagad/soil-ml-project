@@ -24,11 +24,8 @@ pred = model.predict(X_test)
 # Metrics
 # -----------------------------
 
-rmse = mean_squared_error(
-    y_test,
-    pred,
-    squared=False
-)
+mse = mean_squared_error(y_test, pred)
+rmse = mse ** 0.5
 
 print("Evaluation RMSE:", rmse)
 

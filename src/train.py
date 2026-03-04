@@ -87,11 +87,8 @@ model.fit(X_train, y_train)
 
 pred = model.predict(X_test)
 
-rmse = mean_squared_error(
-    y_test,
-    pred,
-    squared=False
-)
+mse = mean_squared_error(y_test, pred)
+rmse = mse ** 0.5
 
 print("RMSE:", rmse)
 
