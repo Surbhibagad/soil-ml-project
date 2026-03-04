@@ -61,8 +61,6 @@ model.fit(X_train, y_train)
 # Predictions
 y_pred = model.predict(X_test)
 
-
-
 mse = mean_squared_error(y_test, y_pred)
 rmse = np.sqrt(mse)
 
