@@ -6,8 +6,11 @@ import sys
 # Load model
 try:
     model = joblib.load("model/model.pkl")
-except:
-    print("Model not found. Train first.")
+except FileNotFoundError:
+    print("Model file not found. Train the model first.")
+    sys.exit(1)
+except Exception as e:
+    print("Error loading model:", e)
     sys.exit(1)
 
 
@@ -17,12 +20,13 @@ if len(sys.argv) != 4:
     sys.exit(1)
 
 
+# Convert inputs
 try:
     temp = float(sys.argv[1])
     humidity = float(sys.argv[2])
     pump = float(sys.argv[3])
-except:
-    print("Inputs must be numbers")
+except ValueError:
+    print("Inputs must be valid numbers")
     sys.exit(1)
 
 
