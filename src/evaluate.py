@@ -79,3 +79,4 @@ elif r2 > 0.4:
 
 else:
     print("Model Quality: Poor (Needs Improvement)")
+    
