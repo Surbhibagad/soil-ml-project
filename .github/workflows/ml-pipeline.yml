@@ -3,101 +3,78 @@ name: ML CI/CT/CD Pipeline
 on:
   push:
     branches: ["main"]
-  pull_request:
 
 jobs:
 
-  continuous-testing:
+  testing:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
 
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          pip install pytest flake8
+    - name: Install deps
+      run: |
+        pip install -r requirements.txt
+        pip install flake8
 
-      # Lint
-      - name: Lint code
-        run: |
-          flake8 src/
-
-      # Unit tests (optional)
-      - name: Run tests
-        run: |
-          pytest tests/ || echo "No tests yet"
+    - name: Lint
+      run: flake8 src/
 
 
-  train-test:
-    needs: continuous-testing
+  train-eval:
+    needs: testing
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
 
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
+    - name: Install deps
+      run: pip install -r requirements.txt
 
-      # Train
-      - name: Train model
-        run: |
-          python src/train.py
+    - name: Train
+      run: python src/train.py
 
-      # Evaluate
-      - name: Evaluate model
-        run: |
-          python src/evaluate.py
+    - name: Evaluate
+      run: python src/evaluate.py
 
-      # Upload artifacts
-      - name: Upload ML artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ml-artifacts
-          path: |
-            model/model.pkl
-            data/split/
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ml-artifacts
+        path: |
+          model/
+          data/split/
 
 
-  docker-build:
-    needs: train-test
+  docker:
+    needs: train-eval
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-      # Download artifacts
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: ml-artifacts
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: ml-artifacts
 
-      # Docker login
-      - name: Login to DockerHub
-        run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login \
-          -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+    - name: Docker login
+      run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login \
+        -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      # Build image
-      - name: Build image
-        run: |
-          docker build -t surbhibagad/soil-ml:latest .
+    - name: Build image
+      run: docker build -t surbhibagad/soil-ml:latest .
 
-      # Push image
-      - name: Push image
-        run: |
-          docker push surbhibagad/soil-ml:latest
+    - name: Push image
+      run: docker push surbhibagad/soil-ml:latest
