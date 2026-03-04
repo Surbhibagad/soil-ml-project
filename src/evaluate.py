@@ -1,4 +1,5 @@
 import joblib
+import numpy as np
 import pandas as pd
 import sys
 
@@ -42,7 +43,7 @@ y_pred = model.predict(X_test_scaled)
 
 
 # Evaluation metrics
-import numpy as np
+
 
 mse = mean_squared_error(y_test, y_pred)
 rmse = np.sqrt(mse)

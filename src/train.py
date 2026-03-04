@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import joblib
 import os
 
@@ -61,7 +62,6 @@ model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
 
 
-import numpy as np
 
 mse = mean_squared_error(y_test, y_pred)
 rmse = np.sqrt(mse)
