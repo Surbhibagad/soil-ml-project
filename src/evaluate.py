@@ -42,11 +42,10 @@ y_pred = model.predict(X_test_scaled)
 
 
 # Evaluation metrics
-rmse = mean_squared_error(
-    y_test,
-    y_pred,
-    squared=False
-)
+import numpy as np
+
+mse = mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
 
 mae = mean_absolute_error(
     y_test,

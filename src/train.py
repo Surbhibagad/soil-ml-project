@@ -61,10 +61,12 @@ model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
 
 
-# Evaluation
-rmse = mean_squared_error(y_test, y_pred, squared=False)
-r2 = r2_score(y_test, y_pred)
+import numpy as np
 
+mse = mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+
+r2 = r2_score(y_test, y_pred)
 
 # Create folders
 os.makedirs("model", exist_ok=True)
