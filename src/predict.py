@@ -3,94 +3,87 @@ import pandas as pd
 import sys
 
 
-# -----------------------------
 # Load model
-# -----------------------------
-
-model = joblib.load("model/model.pkl")
-
-
-# -----------------------------
-# Load history
-# -----------------------------
-
-history = pd.read_excel("data/Soil Moisture.xlsx")
+try:
+    model = joblib.load("model/model.pkl")
+except:
+    print("Model not found. Train first.")
+    sys.exit(1)
 
 
-# -----------------------------
-# Input
-# -----------------------------
-
+# Validate input
 if len(sys.argv) != 4:
     print("Usage: python predict.py <Temp> <Humidity> <Pump>")
     sys.exit(1)
 
 
-temp = float(sys.argv[1])
-hum = float(sys.argv[2])
-pump = float(sys.argv[3])
+try:
+    temp = float(sys.argv[1])
+    humidity = float(sys.argv[2])
+    pump = float(sys.argv[3])
+except:
+    print("Inputs must be numbers")
+    sys.exit(1)
 
 
-# -----------------------------
-# Feature building
-# -----------------------------
+# Input range check
+if not (-20 <= temp <= 60):
+    print("Temperature out of range")
+    sys.exit(1)
 
-last = history.iloc[-1]
-prev = history.iloc[-2]
+if not (0 <= humidity <= 100):
+    print("Humidity out of range")
+    sys.exit(1)
 
-
-moisture_lag = last["Soil Moisture"]
-moisture_delta = last["Soil Moisture"] - prev["Soil Moisture"]
-moisture_mean = history["Soil Moisture"].tail(3).mean()
-
-evapo = temp * (100 - hum) / 100
-
-
-# -----------------------------
-# Input frame
-# -----------------------------
-
-X = pd.DataFrame([[
-    temp,
-    hum,
-    pump,
-    moisture_lag,
-    moisture_delta,
-    evapo,
-    moisture_mean
-]], columns=[
-    "Temperature",
-    "Air Humidity",
-    "Pump Data",
-    "moisture_lag_1",
-    "moisture_delta",
-    "evapo_index",
-    "moisture_mean_3"
-])
+if pump < 0:
+    print("Pump must be positive")
+    sys.exit(1)
 
 
-# -----------------------------
+# Prepare input
+input_data = pd.DataFrame(
+    [[temp, humidity, pump]],
+    columns=["Temperature", "Air Humidity", "Pump Data"]
+)
+
+
 # Predict
-# -----------------------------
-
-pred = model.predict(X)[0]
+prediction = model.predict(input_data)[0]
 
 
-# -----------------------------
-# Advice
-# -----------------------------
+# Soil status
+if prediction < 300:
+    status = "Very Dry"
+    advice = "Turn Pump ON Immediately"
+    irrigation = "Now"
+    water = "20 Liters"
+    crop = "Millet, Barley"
+    alert = "Drought Risk"
 
-if pred < 500:
-    advice = "Turn Pump ON"
+elif prediction < 450:
+    status = "Moderate"
+    advice = "Irrigation Recommended"
+    irrigation = "After 6 Hours"
+    water = "12 Liters"
+    crop = "Wheat, Maize"
+    alert = "Normal"
+
 else:
+    status = "Wet"
     advice = "No Irrigation Needed"
+    irrigation = "After 24 Hours"
+    water = "5 Liters"
+    crop = "Rice, Sugarcane"
+    alert = "Flood Risk"
 
 
-# -----------------------------
 # Output
-# -----------------------------
-
 print("\nPrediction Result")
-print("-----------------")
-print("Predicted Moisture:", round(pred, 2))
-print("Recommendation:", advice)
+print("-------------------")
+print(f"Soil Moisture: {prediction:.2f}")
+print(f"Status: {status}")
+print(f"Irrigation Time: {irrigation}")
+print(f"Water Needed: {water}")
+print(f"Suitable Crops: {crop}")
+print(f"Recommendation: {advice}")
+print(f"Warning: {alert}")
