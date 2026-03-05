@@ -1,0 +1,18 @@
+schema: '2.0'
+stages:
+  train:
+    cmd: python src/train.py
+    deps:
+    - path: data/Soil Moisture.xlsx
+      hash: md5
+      md5: 69a838a3f1130edd98638bc1f9a5034d
+      size: 139084
+    - path: src/train.py
+      hash: md5
+      md5: 40c46d5d5698d1ecf70d686cab7fa333
+      size: 2434
+    outs:
+    - path: model/model.pkl
+      hash: md5
+      md5: 2f8a187df0e72e760c67e25c6bea7907
+      size: 195336
