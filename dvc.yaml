@@ -1,0 +1,8 @@
+stages:
+  train:
+    cmd: python src/train.py
+    deps:
+    - data/Soil Moisture.xlsx
+    - src/train.py
+    outs:
+    - model/model.pkl
