@@ -69,12 +69,27 @@ input_df = pd.DataFrame(
 # Scale input
 input_scaled = scaler.transform(input_df)
 
-
 # Predict
 prediction = model.predict(input_scaled)[0]
 
+# Adjust prediction based on environmental conditions
 
-# Interpretation
+# Hot and dry → soil dries faster
+if temp > 32 and humidity < 50 and pump == 0:
+    prediction -= 400
+# Moderate weather
+elif 25 <= temp <= 32 and 50 <= humidity <= 70:
+    prediction -= 150
+# Cool and humid → soil retains water
+elif temp < 25 and humidity > 70:
+    prediction += 150
+
+# Pump ON increases moisture
+if pump == 1:
+    prediction += 150
+
+prediction = max(300, min(prediction, 984))
+
 # Interpretation
 if prediction < 500:
     status = "Dry"

@@ -16,7 +16,6 @@ print("Columns:", data.columns.tolist())
 
 
 # Feature Engineering
-# Heat dryness = drying power of air
 data["Heat_Dryness"] = data["Temperature"] * (100 - data["Air Humidity"])
 
 
@@ -35,36 +34,38 @@ X = data[FEATURES]
 y = data[TARGET]
 
 
-# Scale features
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
-
-
-# Train-test split
+# Train-test split (IMPORTANT: before scaling)
 X_train, X_test, y_train, y_test = train_test_split(
-    X_scaled,
+    X,
     y,
     test_size=0.2,
     random_state=42
 )
 
 
-# Train model (Better than Linear Regression)
+# Scale features
+scaler = StandardScaler()
+
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+
+# Train model
 model = RandomForestRegressor(
     n_estimators=200,
     random_state=42
 )
 
-model.fit(X_train, y_train)
+model.fit(X_train_scaled, y_train)
 
 
 # Predictions
-y_pred = model.predict(X_test)
+y_pred = model.predict(X_test_scaled)
 
 mse = mean_squared_error(y_test, y_pred)
 rmse = np.sqrt(mse)
-
 r2 = r2_score(y_test, y_pred)
+
 
 # Create folders
 os.makedirs("model", exist_ok=True)
@@ -76,11 +77,8 @@ joblib.dump(model, "model/model.pkl")
 joblib.dump(scaler, "model/scaler.pkl")
 
 
-# Save test data
-pd.DataFrame(X_test, columns=FEATURES).to_csv(
-    "data/split/X_test.csv", index=False
-)
-
+# Save RAW test data (NOT scaled)
+X_test.to_csv("data/split/X_test.csv", index=False)
 y_test.to_csv("data/split/y_test.csv", index=False)
 
 
