@@ -1,9 +1,8 @@
-import warnings
-warnings.filterwarnings("ignore", category=UserWarning)
-
 import joblib
 import pandas as pd
 import sys
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
 
 
 # Load model
