@@ -1,3 +1,6 @@
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+
 import joblib
 import pandas as pd
 import sys
@@ -35,12 +38,12 @@ except ValueError:
 
 
 # Validate ranges
-if not (-20 <= temp <= 60):
-    print("Temperature out of range")
+if not (18 <= temp <= 39):
+    print("Temperature outside training range (18–39)")
     sys.exit(1)
 
-if not (0 <= humidity <= 100):
-    print("Humidity out of range")
+if not (38 <= humidity <= 81):
+    print("Humidity outside training range (38–81)")
     sys.exit(1)
 
 if pump not in [0, 1]:
@@ -49,7 +52,7 @@ if pump not in [0, 1]:
 
 
 # Feature engineering
-heat_dryness = temp * (100 - humidity)
+heat_dryness = (temp/40) * (1 - humidity/100)
 
 
 # Prepare input
@@ -73,19 +76,20 @@ prediction = model.predict(input_scaled)[0]
 
 
 # Interpretation
-if prediction < 300:
-    status = "Very Dry"
-    advice = "Turn Pump ON Immediately"
-    irrigation = "Now"
-    water = "20 Liters"
+# Interpretation
+if prediction < 500:
+    status = "Dry"
+    advice = "Turn Pump ON"
+    irrigation = "Immediately"
+    water = "18 Liters"
     crop = "Millet, Barley"
-    alert = "Drought Risk"
+    alert = "Low Moisture"
 
-elif prediction < 450:
+elif prediction < 750:
     status = "Moderate"
     advice = "Irrigation Recommended"
     irrigation = "After 6 Hours"
-    water = "12 Liters"
+    water = "10 Liters"
     crop = "Wheat, Maize"
     alert = "Normal"
 
@@ -95,7 +99,7 @@ else:
     irrigation = "After 24 Hours"
     water = "5 Liters"
     crop = "Rice, Sugarcane"
-    alert = "Flood Risk"
+    alert = "High Moisture"
 
 
 # Output
