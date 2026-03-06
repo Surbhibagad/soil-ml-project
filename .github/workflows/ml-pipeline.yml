@@ -5,7 +5,6 @@ on:
     branches: ["main"]
   pull_request:
 
-
 jobs:
 
   test:
@@ -39,7 +38,12 @@ jobs:
           python-version: "3.10"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          pip install dvc
+
+      - name: Pull dataset
+        run: dvc pull
 
       - name: Train
         run: python src/train.py
@@ -77,4 +81,3 @@ jobs:
 
       - name: Push
         run: docker push surbhibagad/soil-ml:latest
-        
