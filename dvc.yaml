@@ -5,4 +5,4 @@ stages:
     - data/Soil Moisture.xlsx
     - src/train.py
     outs:
-    - model/model.pkl
+    - model/full_pipeline.pkl.dvc
