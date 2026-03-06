@@ -25,8 +25,8 @@ try:
     temp = float(sys.argv[1])
     humidity = float(sys.argv[2])
     pump = int(sys.argv[3])
-except:
-    print("ERROR: Invalid input")
+except ValueError:
+    print("ERROR: Inputs must be numeric")
     sys.exit(1)
 
 # =========================
