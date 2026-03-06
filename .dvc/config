@@ -1,4 +1,6 @@
 [core]
-    remote = storage
-['remote "storage"']
-    url = ../dvc-storage
+    remote = origin
+['remote "gdrive-remote"']
+    url = gdrive://16J0Rm1v2zVl8aEj8alIRJhsfUZO3VyOx
+['remote "origin"']
+    url = https://dagshub.com/Surbhibagad/soil-ml-project.dvc
