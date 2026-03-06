@@ -1,128 +1,79 @@
-import joblib
 import pandas as pd
+import joblib
 import sys
-import warnings
-warnings.filterwarnings("ignore", category=UserWarning)
+import os
 
+# =========================
+# Load pipeline
+# =========================
+MODEL_PATH = "model/full_pipeline.pkl"
 
-# Load model
-try:
-    model = joblib.load("model/model.pkl")
-    scaler = joblib.load("model/scaler.pkl")
-
-except FileNotFoundError:
-    print("Model or scaler not found. Train first.")
+if not os.path.exists(MODEL_PATH):
+    print("ERROR: Model not found. Run train.py first.")
     sys.exit(1)
 
-except Exception as e:
-    print("Loading error:", e)
-    sys.exit(1)
+pipeline = joblib.load(MODEL_PATH)
 
-
-# Check arguments
+# =========================
+# Input arguments
+# =========================
 if len(sys.argv) != 4:
-    print("Usage: python predict.py <Temp> <Humidity> <Pump>")
+    print("Usage: python predict.py <Temperature> <Humidity> <Pump>")
     sys.exit(1)
 
-
-# Convert inputs
 try:
     temp = float(sys.argv[1])
     humidity = float(sys.argv[2])
-    pump = float(sys.argv[3])
-
-except ValueError:
-    print("Inputs must be numbers")
+    pump = int(sys.argv[3])
+except:
+    print("ERROR: Invalid input")
     sys.exit(1)
 
-
-# Validate ranges
-if not (18 <= temp <= 39):
-    print("Temperature outside training range (18–39)")
-    sys.exit(1)
-
-if not (38 <= humidity <= 81):
-    print("Humidity outside training range (38–81)")
-    sys.exit(1)
-
-if pump not in [0, 1]:
-    print("Pump must be 0 or 1")
-    sys.exit(1)
-
-
-# Feature engineering
-heat_dryness = (temp/40) * (1 - humidity/100)
-
-
-# Prepare input
+# =========================
+# Create dataframe
+# =========================
 input_df = pd.DataFrame(
-    [[temp, humidity, pump, heat_dryness]],
-    columns=[
-        "Temperature",
-        "Air Humidity",
-        "Pump Data",
-        "Heat_Dryness"
-    ]
+    [[temp, humidity, pump]],
+    columns=["Temperature", "Air Humidity", "Pump Data"]
 )
 
+# =========================
+# Prediction
+# =========================
+prediction = pipeline.predict(input_df)[0]
 
-# Scale input
-input_scaled = scaler.transform(input_df)
-
-# Predict
-prediction = model.predict(input_scaled)[0]
-
-# Adjust prediction based on environmental conditions
-
-# Hot and dry → soil dries faster
-if temp > 32 and humidity < 50 and pump == 0:
-    prediction -= 400
-# Moderate weather
-elif 25 <= temp <= 32 and 50 <= humidity <= 70:
-    prediction -= 150
-# Cool and humid → soil retains water
-elif temp < 25 and humidity > 70:
-    prediction += 150
-
-# Pump ON increases moisture
-if pump == 1:
-    prediction += 150
-
-prediction = max(300, min(prediction, 984))
-
-# Interpretation
-if prediction < 500:
+# =========================
+# Status logic
+# =========================
+if prediction < 300:
     status = "Dry"
-    advice = "Turn Pump ON"
     irrigation = "Immediately"
     water = "18 Liters"
     crop = "Millet, Barley"
-    alert = "Low Moisture"
 
-elif prediction < 750:
+elif prediction < 550:
     status = "Moderate"
-    advice = "Irrigation Recommended"
     irrigation = "After 6 Hours"
     water = "10 Liters"
     crop = "Wheat, Maize"
-    alert = "Normal"
 
 else:
     status = "Wet"
-    advice = "No Irrigation Needed"
     irrigation = "After 24 Hours"
     water = "5 Liters"
     crop = "Rice, Sugarcane"
-    alert = "High Moisture"
 
-
+# =========================
 # Output
-print("\nPrediction Result")
-print("-------------------")
-print(f"Soil Moisture: {prediction:.2f}")
-print(f"Status: {status}")
-print(f"Irrigation Time: {irrigation}")
-print(f"Water Needed: {water}")
-print(f"Suitable Crops: {crop}")
-print(f"Recommendation: {advice}")
-print(f"Warning: {alert}")
+# =========================
+print("\nSoil Moisture Prediction")
+print("-------------------------")
+print(f"Temperature : {temp}°C")
+print(f"Humidity    : {humidity}%")
+print(f"Pump        : {'ON' if pump else 'OFF'}")
+
+print(f"\nPredicted Soil Moisture : {prediction:.2f}")
+print(f"Status                  : {status}")
+print(f"Irrigation Time         : {irrigation}")
+print(f"Water Needed            : {water}")
+print(f"Suitable Crops          : {crop}")
