@@ -2,7 +2,8 @@ stages:
   train:
     cmd: python src/train.py
     deps:
-    - data/Soil Moisture.xlsx
-    - src/train.py
+      - data/Soil Moisture.xlsx
+      - src/train.py
     outs:
-    - model/full_pipeline.pkl.dvc
+      - model/full_pipeline.pkl
+      - model/scaler.pkl
